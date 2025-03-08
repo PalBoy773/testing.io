@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Firebase Blog</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+        }
+        .blog-section {
+            margin-bottom: 20px;
+        }
+        .blog-section textarea, .blog-section button {
+            padding: 10px;
+            width: 100%;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .post-preview {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="blog-section">
+            <h2>Your Blog Post</h2>
+            <textarea id="blogPost" rows="10" placeholder="Write your blog post here..."></textarea>
+            <button onclick="postBlog()">Post Blog</button>
+            <div id="posts"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+
+    <script>
+        // Firebase Configuration (using your provided config object)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCAHghR4xilf9v4KWw3GVN21v31dhHin54",
+            authDomain: "unblockedgames77newblog.firebaseapp.com",
+            projectId: "unblockedgames77newblog",
+            storageBucket: "unblockedgames77newblog.firebasestorage.app",
+            messagingSenderId: "595354618306",
+            appId: "1:595354618306:web:4471149be0d51b3f096e5b",
+            measurementId: "G-9D0GWBDC9S"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Function to load blog posts from Firebase Realtime Database
+        function loadPosts() {
+            const postsContainer = document.getElementById("posts");
+            postsContainer.innerHTML = ""; // Clear existing posts
+
+            const postsRef = database.ref("posts");
+            postsRef.on("child_added", function(snapshot) {
+                const postContent = snapshot.val();
+                const postDiv = document.createElement("div");
+                postDiv.classList.add("post-preview");
+                postDiv.innerHTML = `<h3>Your Post:</h3><p>${postContent}</p>`;
+                postsContainer.appendChild(postDiv);
+            });
+        }
+
+        // Function to save new blog post to Firebase Realtime Database
+        function postBlog() {
+            const blogContent = document.getElementById("blogPost").value;
+            if (blogContent.trim() === "") {
+                alert("Blog post cannot be empty!");
+                return;
+            }
+
+            // Save the post to Firebase
+            const postsRef = database.ref("posts");
+            postsRef.push(blogContent);
+
+            // Clear the textarea after posting
+            document.getElementById("blogPost").value = "";
+
+            alert("Blog post added successfully!");
+        }
+
+        // Initialize the page by loading posts
+        loadPosts();
+    </script>
+</body>
+</html>
